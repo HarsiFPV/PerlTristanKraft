@@ -1,34 +1,23 @@
 #!/usr/bin/perl
 
-$emp_name="Sagar";
-$emp_age=23;
-$emp_salary=440.5;
+use strict;
+use warnings;
+use diagnostics;
 
-@names=("Tristan","Roberto","Maximus");
-@ages=(22,23,21);
+use feature 'say';
 
-%emp_data=('Tristan',22,'Robi',23,'Max',26);
+use feature "switch";
 
-$str1 = "Potato";
-$str2 = "Head";
+use v5.16;
 
-$nstr = $str1 . $str2;
+print "Hello world\n";
 
-$strvar = "abc";
-print "$strvar\n";
-$strvar++;
-print "$strvar\n";
+my $name = 'Trito';
 
-$str3 = "trito " x 5;
-print "$str3";
+my ($age, $street) = (22, '115 rue de hésingue');
 
+my $my_info = "$name lives on \"$street\"\n";
 
-#print "$str1 and $str2 makes $nstr";
-#print "Age = $emp_age\n";
-#print "Name = $emp_name\n";
-#print "Salary = $emp_salary\n";
+$my_info = qq{$name lives on "$street"\n};
 
-#print "This first element of ages is $ages[0] and it's name is $names[0]\n"
-
-#print "$emp_data{'Tristan'}\n$emp_data{'Robi'}";
-
+print "$my_info";
