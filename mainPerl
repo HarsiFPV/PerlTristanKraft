@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+
+$emp_name="Sagar";
+$emp_age=23;
+$emp_salary=440.5;
+
+@names=("Tristan","Roberto","Maximus");
+@ages=(22,23,21);
+
+%emp_data=('Tristan',22,'Robi',23,'Max',26);
+
+$str1 = "Potato";
+$str2 = "Head";
+
+$nstr = $str1 . $str2;
+
+$strvar = "abc";
+print "$strvar\n";
+$strvar++;
+print "$strvar\n";
+
+$str3 = "trito " x 5;
+print "$str3";
+
+
+#print "$str1 and $str2 makes $nstr";
+#print "Age = $emp_age\n";
+#print "Name = $emp_name\n";
+#print "Salary = $emp_salary\n";
+
+#print "This first element of ages is $ages[0] and it's name is $names[0]\n"
+
+#print "$emp_data{'Tristan'}\n$emp_data{'Robi'}";
+
