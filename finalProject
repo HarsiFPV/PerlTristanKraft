@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+#Use statments to make sure proper Perl is writen and we are informed of bad uses or errors
+use strict;
+use warnings;
+use diagnostics;
+
+#Version specification to maximise compatibility
+use v5.32;
+
+

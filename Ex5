@@ -36,6 +36,19 @@ if (@numbers) {
 
     my $mean = $sum / scalar(@numbers);
 
+        @numbers = sort { $a <=> $b } @numbers;  # Sorting the numbers in ascending order
+    my $median;
+    my $num_count = scalar(@numbers);
+
+    if ($num_count % 2 == 0) {
+        my $middle_index = $num_count / 2;
+        $median = ($numbers[$middle_index - 1] + $numbers[$middle_index]) / 2;
+    } else {
+        my $middle_index = int($num_count / 2);
+        $median = $numbers[$middle_index];
+    }
+
     print "Minmal value is $min \nMaximal value is $max\n";
-    say "Mean value is $mean"
+    say "Mean value is $mean";
+    say "Median value is $median";
 }
