@@ -9,15 +9,25 @@ use List::Util qw(shuffle);
 #Version specification to maximise compatibility
 use v5.32;
 
-# Read the input file containing the master exam
-my $input_file = '0_ENTRANCE_EXAM_MASTER_';
+# CHAPTER 1: Command-line Argument Handling and File I/O
+# ------------------------------------------------------
+
+# Check if the input file name is provided as a command-line argument
+my $input_file = shift @ARGV;
+die "Usage: $0 <input_file>\n" unless defined $input_file;
+
+# Open the input file
 open my $fh_in, '<', $input_file or die "Could not open $input_file: $!";
 
-# Open the output file to write modified content
-my $output_file = 'modified_exam.txt';
+# Generate the output file name based on the input file name
+my $output_file = 'modified_' . $input_file;
 open my $fh_out, '>', $output_file or die "Could not open $output_file: $!";
 
-# Initialize variables to hold questions and answers
+
+# CHAPTER 2: Process Input and Prepare Data Structures
+# ----------------------------------------------------
+
+# Initialize variables to hold questions and answer sets
 my @questions;
 my %answer_sets; # Hash to store answer sets for each question
 
@@ -37,12 +47,26 @@ while (my $line = <$fh_in>) {
 # Close the input file
 close $fh_in;
 
+
+# CHAPTER 3: Randomize Answer Sets
+# --------------------------------
+
+# Shuffle the order of answer sets for each question
+foreach my $question (keys %answer_sets) {
+    @{$answer_sets{$question}} = shuffle @{$answer_sets{$question}};
+}
+
+
+# CHAPTER 4: Generate Modified Exam Content
+# -----------------------------------------
+
 # Write the modified content to the output file
 for my $i (0..$#questions) {
     print $fh_out "________________________________________________________________________________\n\n";
     print $fh_out "$questions[$i]\n\n";
 
-    my @shuffled_answers = shuffle @{$answer_sets{$questions[$i]}};
+    # Shuffled answers for the current question
+    my @shuffled_answers = @{$answer_sets{$questions[$i]}};
     for my $j (0..$#shuffled_answers) {
         print $fh_out "    [ ] $shuffled_answers[$j]\n";
     }
