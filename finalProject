@@ -8,61 +8,47 @@ use diagnostics;
 #Version specification to maximise compatibility
 use v5.32;
 
-#Main task (part 1a)
-#Randomization of questions
+# Read the input file containing the master exam
+my $input_file = '0_ENTRANCE_EXAM_MASTER_';
+open my $fh_in, '<', $input_file or die "Could not open $input_file: $!";
 
-#Pass file path to a variable
-my $filename = 'c:\Perl\0_ENTRANCE_EXAM_MASTER_.txt';
+# Open the output file to write modified content
+my $output_file = 'modified_exam.txt';
+open my $fh_out, '>', $output_file or die "Could not open $output_file: $!";
 
-#Open the file as read to get its contents or throw an error to inform the useer
-open(my $fh, '<', $filename) or die $!;
-my @lines = <$fh>;
-close $fh;
+# Initialize variables to hold questions and answers
+my @questions;
+my @answer_sets;
 
-# Create a new exam file to write
-my $new_exam_file = "random_exam.txt";
-open(my $new_exam_fh, '>', $new_exam_file) or die "Could not open '$new_exam_file': $!";
-
-my $question_number = 0;
-my @current_question;
-
-# Process each line in the master exam
-foreach my $line (@lines) {
+# Process each line in the input file
+while (my $line = <$fh_in>) {
     chomp $line;
 
-    if ($line =~ /^\d+\.\s+(.*)/) {
-        # New question encountered
-        if (@current_question) {
-            print_question(@current_question);  # Process the previous question
-            @current_question = ();
-        }
-        $question_number++;
-        push @current_question, $1;  # Save the question text
-    } else {
-        push @current_question, $line;  # Save the answer line
+    # Detect questions and answer sets
+    if ($line =~ /^(\d+\.\s+.+)$/) {
+        push @questions, $1;
+        push @answer_sets, []; # Initialize answer set array for the new question
+    } elsif ($line =~ /^\s*\[.\]\s+(.+)$/ && @questions) {
+        push @{$answer_sets[-1]}, $1; # Add answer to the last question encountered
     }
 }
 
-# Process the last question
-if (@current_question) {
-    print_question(@current_question);
-}
+# Close the input file
+close $fh_in;
 
-close $new_exam_fh;
+# Write the modified content to the output file
+for my $i (0..$#questions) {
+    print $fh_out "________________________________________________________________________________\n\n";
+    print $fh_out "$questions[$i]\n\n";
 
-sub print_question {
-    my @question_lines = @_;
-
-    # Print question text
-    print $new_exam_fh "$question_number. $question_lines[0]\n";
-
-    # Print answer choices without "[X]"
-    for (my $i = 1; $i < @question_lines; $i++) {
-        $question_lines[$i] =~ s/^\[X\] //;  # Remove "[X]" from answer
-        print $new_exam_fh "$question_lines[$i]\n";
+    for my $j (0..$#{$answer_sets[$i]}) {
+        print $fh_out "    [ ] $answer_sets[$i][$j]\n";
     }
-    print $new_exam_fh "\n";  # Add a newline after each question
+
+    print $fh_out "\n";
 }
 
-print_question;
+# Close the output file
+close $fh_out;
 
+print "Modified exam content written to $output_file\n";
