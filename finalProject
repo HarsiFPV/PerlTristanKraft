@@ -4,6 +4,7 @@
 use strict;
 use warnings;
 use diagnostics;
+use List::Util qw(shuffle);
 
 #Version specification to maximise compatibility
 use v5.32;
@@ -18,7 +19,7 @@ open my $fh_out, '>', $output_file or die "Could not open $output_file: $!";
 
 # Initialize variables to hold questions and answers
 my @questions;
-my @answer_sets;
+my %answer_sets; # Hash to store answer sets for each question
 
 # Process each line in the input file
 while (my $line = <$fh_in>) {
@@ -27,9 +28,9 @@ while (my $line = <$fh_in>) {
     # Detect questions and answer sets
     if ($line =~ /^(\d+\.\s+.+)$/) {
         push @questions, $1;
-        push @answer_sets, []; # Initialize answer set array for the new question
+        $answer_sets{$1} = []; # Initialize answer set array for the question
     } elsif ($line =~ /^\s*\[.\]\s+(.+)$/ && @questions) {
-        push @{$answer_sets[-1]}, $1; # Add answer to the last question encountered
+        push @{$answer_sets{$questions[-1]}}, $1; # Add answer to the last question encountered
     }
 }
 
@@ -41,8 +42,9 @@ for my $i (0..$#questions) {
     print $fh_out "________________________________________________________________________________\n\n";
     print $fh_out "$questions[$i]\n\n";
 
-    for my $j (0..$#{$answer_sets[$i]}) {
-        print $fh_out "    [ ] $answer_sets[$i][$j]\n";
+    my @shuffled_answers = shuffle @{$answer_sets{$questions[$i]}};
+    for my $j (0..$#shuffled_answers) {
+        print $fh_out "    [ ] $shuffled_answers[$j]\n";
     }
 
     print $fh_out "\n";
