@@ -16,11 +16,11 @@ use v5.32;
 my $input_file = shift @ARGV;
 die "Usage: $0 <input_file>\n" unless defined $input_file;
 
-# Open the input file
+# Generate the output file name based on the input file name and current timestamp
+my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
+my $timestamp = sprintf("%04d%02d%02d-%02d%02d%02d", $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+my $output_file = "${timestamp}-$input_file";
 open my $fh_in, '<', $input_file or die "Could not open $input_file: $!";
-
-# Generate the output file name based on the input file name
-my $output_file = 'modified_' . $input_file;
 open my $fh_out, '>', $output_file or die "Could not open $output_file: $!";
 
 
