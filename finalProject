@@ -8,4 +8,61 @@ use diagnostics;
 #Version specification to maximise compatibility
 use v5.32;
 
+#Main task (part 1a)
+#Randomization of questions
+
+#Pass file path to a variable
+my $filename = 'c:\Perl\0_ENTRANCE_EXAM_MASTER_.txt';
+
+#Open the file as read to get its contents or throw an error to inform the useer
+open(my $fh, '<', $filename) or die $!;
+my @lines = <$fh>;
+close $fh;
+
+# Create a new exam file to write
+my $new_exam_file = "random_exam.txt";
+open(my $new_exam_fh, '>', $new_exam_file) or die "Could not open '$new_exam_file': $!";
+
+my $question_number = 0;
+my @current_question;
+
+# Process each line in the master exam
+foreach my $line (@lines) {
+    chomp $line;
+
+    if ($line =~ /^\d+\.\s+(.*)/) {
+        # New question encountered
+        if (@current_question) {
+            print_question(@current_question);  # Process the previous question
+            @current_question = ();
+        }
+        $question_number++;
+        push @current_question, $1;  # Save the question text
+    } else {
+        push @current_question, $line;  # Save the answer line
+    }
+}
+
+# Process the last question
+if (@current_question) {
+    print_question(@current_question);
+}
+
+close $new_exam_fh;
+
+sub print_question {
+    my @question_lines = @_;
+
+    # Print question text
+    print $new_exam_fh "$question_number. $question_lines[0]\n";
+
+    # Print answer choices without "[X]"
+    for (my $i = 1; $i < @question_lines; $i++) {
+        $question_lines[$i] =~ s/^\[X\] //;  # Remove "[X]" from answer
+        print $new_exam_fh "$question_lines[$i]\n";
+    }
+    print $new_exam_fh "\n";  # Add a newline after each question
+}
+
+print_question;
 
