@@ -27,6 +27,10 @@ open my $fh_out, '>', $output_file or die "Could not open $output_file: $!";
 # CHAPTER 2: Process Input and Prepare Data Structures
 # ----------------------------------------------------
 
+# Regular expressions with explanations
+my $question_regex = qr/^(\d+\.\s+.+)$/;  # Matches a question number and text
+my $answer_regex = qr/^\s*\[.\]\s+(.+)$/;  # Matches an answer choice
+
 # Initialize variables to hold questions and answer sets
 my @questions;
 my %answer_sets; # Hash to store answer sets for each question
@@ -36,10 +40,10 @@ while (my $line = <$fh_in>) {
     chomp $line;
 
     # Detect questions and answer sets
-    if ($line =~ /^(\d+\.\s+.+)$/) {
+    if ($line =~ /$question_regex/) {
         push @questions, $1;
         $answer_sets{$1} = []; # Initialize answer set array for the question
-    } elsif ($line =~ /^\s*\[.\]\s+(.+)$/ && @questions) {
+    } elsif ($line =~ /$answer_regex/ && @questions) {
         push @{$answer_sets{$questions[-1]}}, $1; # Add answer to the last question encountered
     }
 }
