@@ -4,7 +4,7 @@ use warnings;
 
 use v5.32;
 
-score_exam ('.\sample_exam.txt', '.\Exams\Organa_Leia.txt' );
+score_exam ('.\sample_exam.txt', '.\Exams\Organa_Leia.txt', '.\Exams\Linz_Marcus.txt' );
 
 sub score_exam {
 

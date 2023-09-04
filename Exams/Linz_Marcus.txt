@@ -33,7 +33,7 @@ ________________________________________________________________________________
  1. The static type of a Perl variable is determined by:
 
     [ ] The name of the variable
-    [X] The compile-time type declarator of the variable
+    [] The compile-time type declarator of the variable
     [ ] Random chance
     [ ] Nothing: Perl variables don't have a static type
     [ ] The type of the first value placed in the variable
@@ -47,7 +47,7 @@ ________________________________________________________________________________
     [ ] Null, scalar, and void
     [ ] Blood, sweat, and tears
     [ ] List, scalar, and null
-    [X] List, scalar, and void
+    [x] List, scalar, and void
 
 
 ________________________________________________________________________________
@@ -55,7 +55,7 @@ ________________________________________________________________________________
  3. The "default variable" (or "topic variable") is:
 
     [ ] The last variable that was successfully assigned to
-    [X] $_
+    [XX] $_
     [ ] $=
     [ ] $$
     [ ] @_
@@ -65,7 +65,7 @@ ________________________________________________________________________________
 
  4. You can access the command-line arguments of a Perl program via:
 
-    [X] @ARGV
+    [z] @ARGV
     [ ] @ARGS
     [ ] $ARGV
     [ ] @_
