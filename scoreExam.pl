@@ -4,15 +4,15 @@ use warnings;
 
 use v5.32;
 
-score_exam ('.\sample_exam.txt', '.\Exams\Organa_Leia.txt', '.\Exams\Linz_Marcus.txt' );
+score_exam ('.\sample_exam.txt', '.\Exams\Linz_Marcus.txt' );
 
 sub score_exam {
 
     my ($master_file, @completed_files) = @_;
 
     # Regular expressions with explanations
-    my $question_regex = qr/^\s*(\d+\.\s+.+)$/;     # Matches a question number and text
-    my $answer_regex = qr/^\s*\[([Xx ]{0,1})\]\s+(.+)$/;  # Matches an answer choice
+    my $question_regex = qr/^\s*(\d+\.\s+.+)$/;             # Matches a question number and text
+    my $answer_regex = qr/^\s*\[([Xx ]{0,1})\]\s+(.+)$/;    # Matches an answer choice
 
     # Initialize variables to hold questions and answer sets from the master file
     my @master_questions;
@@ -74,7 +74,7 @@ sub score_exam {
             $score++ if $checked_count == 1 && $correct_count == 1;
         }
 
-        print "$completed_file...........$score/$answered_questions out of a total of $total_questions questions\n";
+        print "$completed_file...........$score/$answered_questions\n";
 
         # Check for missing questions or answers
         for my $question (@master_questions) {
