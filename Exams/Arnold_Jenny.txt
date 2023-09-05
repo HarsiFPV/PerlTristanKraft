@@ -30,14 +30,6 @@ Total number of questions: 30
 
 ________________________________________________________________________________
 
- 1. The static type of a Perl variable is determined by:
-
-    [ ] The name of the variable
-    [ ] The compile-time type declarator of the variable
-    [ ] Random chance
-    [X] Nothing: Perl variables don't have a static type
-    [ ] The type of the first value placed in the variable
-
 ________________________________________________________________________________
 
  2. Perl's three main types of call context (or "amount context") are:
@@ -46,7 +38,7 @@ ________________________________________________________________________________
     [ ] Null, scalar, and void
     [ ] Blood, sweat, and tears
     [ ] List, scalar, and null
-    [X] List, scalar, and void
+
 
 ________________________________________________________________________________
 

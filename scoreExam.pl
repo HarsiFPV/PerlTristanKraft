@@ -4,7 +4,7 @@ use warnings;
 
 use v5.32;
 
-score_exam ('.\sample_exam.txt', '.\Exams\Linz_Marcus.txt' );
+score_exam ('.\sample_exam.txt', '.\Exams\Arnold_Jenny.txt' );
 
 sub score_exam {
 
@@ -79,12 +79,12 @@ sub score_exam {
         # Check for missing questions or answers
         for my $question (@master_questions) {
             unless (exists $completed_answer_sets{$question}) {
-                print "$completed_file:\nMissing question: $question\n";
+                print "\tMissing question: $question\n";
                 next;
             }
 
             for my $answer (keys %{$master_answer_sets{$question}}) {
-                print "$completed_file:\nMissing answer: $answer\n" unless exists $completed_answer_sets{$question}->{$answer};
+                print "\tMissing answer: $answer\n" unless exists $completed_answer_sets{$question}->{$answer};
             }
         }
     }
