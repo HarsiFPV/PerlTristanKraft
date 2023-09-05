@@ -43,8 +43,8 @@ ________________________________________________________________________________
 
  2. Perl's three main types of call context (or "amount context") are:
 
-    [ ] List, linear, and void
-    [ ] Null, scalar, and void
+    [] List, linear, and void
+    [] Null, scalar, and void
     [ ] Blood, sweat, and tears
     [ ] List, scalar, and null
     [x] List, scalar, and void
