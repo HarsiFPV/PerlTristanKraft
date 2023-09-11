@@ -39,7 +39,7 @@ ________________________________________________________________________________
 ________________________________________________________________________________
 
 
-2. Perl's three main types of call context (or "amount context") are:
+      2. Perl's three main types of call context (or "amount context") are:
 
     [X] List, scalar, and void
     [ ] List, linear, and void
@@ -349,7 +349,7 @@ ________________________________________________________________________________
 ________________________________________________________________________________
 
 
-30. What is the purpose of the 'use strict' pragma?
+      30. What is the purpose of the 'use strict' pragma?
 
     [X] It disallows undeclared variables, barewords, and symbolic references
     [ ] It converts all warnings to fatal errors

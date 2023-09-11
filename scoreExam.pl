@@ -4,39 +4,52 @@ use warnings;
 
 use v5.32;
 
+use Lingua::StopWords qw( getStopWords );
+
+my $test_string = " What is the airspeed of a fully laden African swallow? ";
+
 score_exam ('.\sample_exam.txt', '.\Exams\Arnold_Jenny.txt' );
 
+
+#normalize_text($test_string);
+
+sub normalize_text {
+
+    my $stopwords = getStopWords('en');
+
+    my ($sentence) = @_;
+    my @words = split(/\s+/, lc($sentence));
+    my @filtered_words = grep { !$stopwords->{$_} } @words;
+
+    print "Original: $sentence\n";
+    print "Filtered: ", join(' ', @filtered_words), "\n";
+    return join(' ', @filtered_words);
+
+}
+
 sub score_exam {
-
     my ($master_file, @completed_files) = @_;
+    my $question_regex = qr/^\s*(\d+\.\s+.+)$/;
+    my $answer_regex = qr/^\s*\[([Xx ]{0,1})\]\s+(.+)$/;
 
-    # Regular expressions with explanations
-    my $question_regex = qr/^\s*(\d+\.\s+.+)$/;             # Matches a question number and text
-    my $answer_regex = qr/^\s*\[([Xx ]{0,1})\]\s+(.+)$/;    # Matches an answer choice
-
-    # Initialize variables to hold questions and answer sets from the master file
     my @master_questions;
     my %master_answer_sets;
-    my $total_questions;
 
-    # Process master file
     open my $fh_master, '<', $master_file or die "Could not open $master_file: $!";
     while (my $line = <$fh_master>) {
         chomp $line;
 
         if ($line =~ /$question_regex/) {
-            push @master_questions, $1;
-            $master_answer_sets{$1} = {};
-            $total_questions++;
-        }
-        elsif ($line =~ /$answer_regex/ && @master_questions) {
-            my ($mark, $answer) = (uc($1), $2); # Convert to uppercase
+            my $normalized_question = normalize_text($1);
+            push @master_questions, $normalized_question;
+            $master_answer_sets{$normalized_question} = {};
+        } elsif ($line =~ /$answer_regex/ && @master_questions) {
+            my ($mark, $answer) = (uc($1), normalize_text($2));
             $master_answer_sets{$master_questions[-1]}->{$answer} = $mark;
         }
     }
     close $fh_master;
 
-    # Process each completed exam file
     foreach my $completed_file (@completed_files) {
         open my $fh_completed, '<', $completed_file or die "Could not open $completed_file: $!";
         my $score = 0;
@@ -44,21 +57,21 @@ sub score_exam {
         my @completed_questions;
         my %completed_answer_sets;
 
-        # Process student's file
         while (my $line = <$fh_completed>) {
             chomp $line;
+
             if ($line =~ /$question_regex/) {
-                push @completed_questions, $1;
-                $completed_answer_sets{$1} = {};
+                my $normalized_question = normalize_text($1);
+                push @completed_questions, $normalized_question;
+                $completed_answer_sets{$normalized_question} = {};
             }
             elsif ($line =~ /$answer_regex/ && @completed_questions) {
-                my ($mark, $answer) = (uc($1), $2); # Convert to uppercase
+                my ($mark, $answer) = (uc($1), normalize_text($2));
                 $completed_answer_sets{$completed_questions[-1]}->{$answer} = $mark;
             }
         }
         close $fh_completed;
 
-        # Compare student's answers to master
         for my $question (@completed_questions) {
             my $correct_count = 0;
             my $checked_count = 0;
@@ -76,7 +89,6 @@ sub score_exam {
 
         print "$completed_file...........$score/$answered_questions\n";
 
-        # Check for missing questions or answers
         for my $question (@master_questions) {
             unless (exists $completed_answer_sets{$question}) {
                 print "\tMissing question: $question\n";
