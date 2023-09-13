@@ -7,37 +7,25 @@ use v5.32;
 use Lingua::StopWords qw( getStopWords );
 use Text::Levenshtein::XS qw(distance);
 
-my $test_string = " What is the airspeed of a fully laden African swallow? ";
-
-score_exam ('.\sample_exam.txt', '.\Exams\Arnold_Jenny.txt');
-
-#distance_calc("23. In Perl, you can take references to...", "23. In Perl, you can take references to...")
-
-#normalize_text($test_string);
+score_exam ('./sample_exam.txt', './Exams/Arnold_Jenny.txt', './Exams/Berger_Carina.txt', './Exams/Frank_Tina.txt', './Exams/Haas_Charlotte.txt');
 
 sub normalize_text {
     my $stopwords = getStopWords('en');
 
-    # Supprimer 'not' de la liste des stopwords
     delete $stopwords->{not};
 
     my ($sentence) = @_;
     my @words = split(/\s+/, lc($sentence));
     my @filtered_words = grep { !$stopwords->{$_} } @words;
 
-    #print "Original: $sentence\n";
-    #print "Filtered: ", join(' ', @filtered_words), "\n";
-
     return join(' ', @filtered_words);
 }
 
 sub distance_calc {
     my ($str1, $str2) = @_;
-    my $max_distance = int(0.1 * length($str1)); # 10% of the length of the normalized original string
+    my $max_distance = int(0.1 * length($str1));
     return distance($str1, $str2) <= $max_distance;
-
 }
-
 
 sub score_exam {
     my ($master_file, @completed_files) = @_;
@@ -53,7 +41,6 @@ sub score_exam {
 
         if ($line =~ /$question_regex/) {
             my $normalized_question = normalize_text($1);
-            #print "Detected Question (completed file): $normalized_question\n";
             push @master_questions, $normalized_question;
             $master_answer_sets{$normalized_question} = {};
         }
@@ -64,10 +51,11 @@ sub score_exam {
     }
     close $fh_master;
 
+    my @questions_answered;
+    my @correct_answers;
+
     foreach my $completed_file (@completed_files) {
         open my $fh_completed, '<', $completed_file or die "Could not open $completed_file: $!";
-        my $score = 0;
-        my $answered_questions = 0;
         my @completed_questions;
         my %completed_answer_sets;
 
@@ -87,57 +75,44 @@ sub score_exam {
         close $fh_completed;
 
         my %feedback;
+        my $num_questions_answered = 0;
+        my $num_correct_answers = 0;
 
         for my $completed_question (@completed_questions) {
-            my $correct_count = 0;
-            my $checked_count = 0;
-
-            my ($similar_master_question) = grep {distance_calc($completed_question, $_)} @master_questions;
-            #print "DEBUG: Matching master question found for $completed_question: $similar_master_question\n"; # Debug print
+            my ($similar_master_question) = grep { distance_calc($completed_question, $_) } @master_questions;
 
             if ($similar_master_question && $completed_question ne $similar_master_question) {
                 $feedback{$completed_file}{"questions"}{$completed_question} = $similar_master_question;
             }
-
-            next unless $similar_master_question; # Skip if no similar question in the master set
+            next unless $similar_master_question;
 
             for my $answer (keys %{$completed_answer_sets{$completed_question}}) {
                 if ($completed_answer_sets{$completed_question}->{$answer} eq "X") {
-                    #print "DEBUG: Checking answer: $answer for question: $completed_question\n"; # Debug print
-                    $checked_count++;
-
-                    # Check for exact match first
                     if (exists $master_answer_sets{$similar_master_question}->{$answer}) {
-                        $correct_count++ if $master_answer_sets{$similar_master_question}->{$answer} eq "X";
+                        $num_correct_answers++ if $master_answer_sets{$similar_master_question}->{$answer} eq "X";
                         next;
                     }
-
-                    # If no exact match found, look for similar answer
-                    my ($similar_master_answer) = grep {distance_calc($answer, $_)} keys %{$master_answer_sets{$similar_master_question}};
-
+                    my ($similar_master_answer) = grep { distance_calc($answer, $_) } keys %{$master_answer_sets{$similar_master_question}};
                     if ($similar_master_answer && $answer ne $similar_master_answer) {
                         $feedback{$completed_file}{"answers"}{$answer} = $similar_master_answer;
-                        $correct_count++ if $master_answer_sets{$similar_master_question}->{$similar_master_answer} eq "X";
+                        $num_correct_answers++ if $master_answer_sets{$similar_master_question}->{$similar_master_answer} eq "X";
                     }
                 }
             }
-
-            #print "DEBUG: For question $completed_question - checked_count: $checked_count, correct_count: $correct_count\n"; # Debug print
-
-            $answered_questions++ if $checked_count == 1;
-            $score++ if $checked_count == 1 && $correct_count == 1;
+            $num_questions_answered++;
         }
 
-        print "$completed_file...........$score/$answered_questions\n";
+        push @questions_answered, $num_questions_answered;
+        push @correct_answers, $num_correct_answers;
 
-        # Vérifier les questions qui ne sont pas du tout dans l'exam rendu
+        print "$completed_file...........$num_correct_answers/$num_questions_answered\n\n";
+
         for my $master_question (@master_questions) {
-            unless (grep {distance_calc($master_question, $_)} @completed_questions) {
+            unless (grep { distance_calc($master_question, $_) } @completed_questions) {
                 $feedback{$completed_file}{"missing_questions"}{$master_question} = 1;
             }
         }
 
-        # Step 3: Display the feedback
         if (exists $feedback{$completed_file}) {
             for my $q (keys %{$feedback{$completed_file}{"questions"}}) {
                 print "\tMissing question: $feedback{$completed_file}{'questions'}{$q}\n";
@@ -146,16 +121,47 @@ sub score_exam {
 
             for my $a (keys %{$feedback{$completed_file}{"answers"}}) {
                 print "\tMissing answer: $feedback{$completed_file}{'answers'}{$a}\n";
-                print "\tUsed this instead: $a\n";
-            }
-
-            # Check for completely missing questions
-            for my $mq (keys %{$feedback{$completed_file}{"missing_questions"}}) {
-                # Only display missing questions that were not already matched with a similar question
-                unless (exists $feedback{$completed_file}{"questions"}{$mq}) {
-                    print "\tMissing question $mq\n\tNo close match found for question $mq\n\n";
-                }
+                print "\tUsed this instead: $a\n\n";
             }
         }
     }
+
+    my $avg_questions_answered = int(sum(@questions_answered)/@questions_answered);
+    my $avg_correct_answers = int(sum(@correct_answers)/@correct_answers);
+
+    my $min_questions_answered = int(min(@questions_answered));
+    my $max_questions_answered = int(max(@questions_answered));
+    my $min_correct_answers = int(min(@correct_answers));
+    my $max_correct_answers = int(max(@correct_answers));
+
+    my $count_min_questions_answered = grep { $_ == $min_questions_answered } @questions_answered;
+    my $count_max_questions_answered = grep { $_ == $max_questions_answered } @questions_answered;
+
+    my $count_min_correct_answers = grep { $_ == $min_correct_answers } @correct_answers;
+    my $count_max_correct_answers = grep { $_ == $max_correct_answers } @correct_answers;
+
+    print "\n\tAverage number of questions answered...... $avg_questions_answered\n";
+    print "\t\t\t\t    Minimum....... $min_questions_answered ($count_min_questions_answered student", ($count_min_questions_answered == 1 ? "" : "s"), ")\n";
+    print "\t\t\t\t    Maximum....... $max_questions_answered ($count_max_questions_answered student", ($count_max_questions_answered == 1 ? "" : "s"), ")\n";
+
+    print "\n\tAverage number of correct answers......... $avg_correct_answers\n";
+    print "\t\t\t\t  Minimum......... $min_correct_answers ($count_min_correct_answers student", ($count_min_correct_answers == 1 ? "" : "s"), ")\n";
+    print "\t\t\t\t  Maximum......... $max_correct_answers ($count_max_correct_answers student", ($count_max_correct_answers == 1 ? "" : "s"), ")\n";
+}
+
+sub sum {
+    my @numbers = @_;
+    my $total = 0;
+    $total += $_ for @numbers;
+    return $total;
+}
+
+sub min {
+    my @numbers = @_;
+    return (sort {$a <=> $b} @numbers)[0];
+}
+
+sub max {
+    my @numbers = @_;
+    return (sort {$a <=> $b} @numbers)[-1];
 }
