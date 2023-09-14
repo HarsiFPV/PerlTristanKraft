@@ -196,14 +196,16 @@ sub score_exam {
     my @reasons;
 
     # Check if score is less than 50% of the total questions.
-    push @reasons, 'score < 50%' if $correct_answers[$i] < @master_questions / 2;
+    push @reasons, 'score < 50%' if $correct_answers[$i] < @master_questions / 2 && $questions_answered[$i] != 0;
 
     # Check if score is more than one standard deviation below the mean.
-    push @reasons, 'score > 1σ below mean' if $correct_answers[$i] < $mean_score - $std_dev;
+    push @reasons, 'score > 1σ below mean' if $correct_answers[$i] < $mean_score - $std_dev && $questions_answered[$i] != 0;
 
     # Check if score is in the bottom 25% of all scores.
     # Note: This assumes you have already calculated the $twenty_fifth_percentile variable elsewhere.
-    push @reasons, 'bottom 25% of cohort' if $correct_answers[$i] <= $twenty_fifth_percentile;
+    push @reasons, 'bottom 25% of cohort' if $correct_answers[$i] <= $twenty_fifth_percentile && $questions_answered[$i] != 0;
+
+    push @reasons, 'Possible empty file' if $questions_answered[$i] == 0;
 
     if (@reasons) {
         printf("%s........%02d/%02d (%s)\n", $completed_files[$i], $correct_answers[$i], $questions_answered[$i], join(", ", @reasons));
