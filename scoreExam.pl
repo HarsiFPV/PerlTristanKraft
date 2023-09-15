@@ -184,12 +184,16 @@ sub score_exam {
         # Initializing a feedback hash to store potential issues with student answers and questions, and track performance.
         my %feedback;
 
-        # Variables to count the number of correct answers and the number of questions attempted by the student.
+        # Variables to count the number of correct answers and the number of questions attempted by the student aswell as the number of marked answers for the current question
         my $num_correct_answers = 0;
         my $answered_questions = 0;
+        my $num_marked_answers;
 
         # Looping through each of the student's completed questions to compare against the master.
         for my $completed_question (@completed_questions) {
+
+            # Reset the counter for each question
+            $num_marked_answers = 0;
 
             # Searching for a similar master question using a distance calculation to account for minor discrepancies.
             my ($similar_master_question) = grep { distance_calc($completed_question, $_) } @master_questions;
@@ -198,6 +202,7 @@ sub score_exam {
             if ($similar_master_question && $completed_question ne $similar_master_question) {
                 $feedback{$completed_file}{"questions"}{$completed_question} = $similar_master_question;
             }
+
             # Skipping the rest of this loop iteration if there's no similar master question found.
             next unless $similar_master_question;
 
@@ -207,6 +212,7 @@ sub score_exam {
                 # If the student marked this answer, incrementing the attempted count.
                 if ($completed_answer_sets{$completed_question}->{$answer} eq "X") {
                     $answered_questions++;
+                    $num_marked_answers++;
 
                     # If the answer also exists in the master and is marked correct, increment the correct count.
                     if (exists $master_answer_sets{$similar_master_question}->{$answer}) {
@@ -224,7 +230,16 @@ sub score_exam {
                     }
                 }
             }
-        }
+                # If multiple answers are marked for one question, consider it incorrect.
+                if ($num_marked_answers > 1) {
+
+                    # Decrement correct answers by 1.
+                    $num_correct_answers-- if $num_correct_answers > 0;
+
+                    # Count question once, remove extras.
+                    $answered_questions -= ($num_marked_answers - 1);
+                }
+            }
 
         # Storing the count of questions answered and the number of correct answers for each student for further analysis.
         push @questions_answered, $answered_questions;
