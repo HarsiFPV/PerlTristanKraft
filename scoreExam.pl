@@ -100,6 +100,9 @@ sub score_exam {
     my @master_questions;
     my %master_answer_sets;
 
+    # Determine the total number of characters to print, including dots.
+    my $target_length = 40;
+
     # Opening master exam file for reading; if not found, it terminates the script with an error message.
     open my $fh_master, '<', $master_file or die "Could not open $master_file: $!";
 
@@ -245,8 +248,14 @@ sub score_exam {
         push @questions_answered, $answered_questions;
         push @correct_answers, $num_correct_answers;
 
-        # Printing the score of the student out of the number of questions they attempted.
-        print "$completed_file...........$num_correct_answers/$answered_questions\n\n";
+        # Calculate the number of dots needed.
+        my $dots_needed = $target_length - length($completed_file) - length("$num_correct_answers/$answered_questions");
+
+        # Ensure a minimum of three dots for visual clarity.
+        $dots_needed = 3 if $dots_needed < 3;
+
+        # Printing the score of the student with aligned dots.
+        print "$completed_file" . ("." x $dots_needed) . "$num_correct_answers/$answered_questions\n";
 
         # Looping through master questions to identify any that the student may have missed.
         for my $master_question (@master_questions) {
@@ -262,14 +271,14 @@ sub score_exam {
 
             # Looping through the feedback to print any discrepancies between the student's questions and the master.
             for my $q (keys %{$feedback{$completed_file}{"questions"}}) {
-                print "\tMissing question: $feedback{$completed_file}{'questions'}{$q}\n";
-                print "\tUsed this instead: $q\n\n";
+                print "\tMissing question:\t$feedback{$completed_file}{'questions'}{$q}\n";
+                print "\tUsed this instead:\t$q\n\n";
             }
 
             # Looping through the feedback to print any discrepancies between the student's answers and the master.
             for my $a (keys %{$feedback{$completed_file}{"answers"}}) {
-                print "\tMissing answer: $feedback{$completed_file}{'answers'}{$a}\n";
-                print "\tUsed this instead: $a\n\n";
+                print "\tMissing answer:\t\t$feedback{$completed_file}{'answers'}{$a}\n";
+                print "\tUsed this instead:\t$a\n\n";
             }
         }
     }
@@ -338,7 +347,16 @@ sub score_exam {
 
         # Printing only those students whose results fall into the predefined categories, allowing educators to prioritize their attention.
         if (@reasons) {
-        printf("%s........%02d/%02d (%s)\n", $completed_files[$i], $correct_answers[$i], $questions_answered[$i], join(", ", @reasons));
+
+            # Format '00' as '0' for better display.
+            my $formatted_correct_answers = $correct_answers[$i] == 0 ? 0 : $correct_answers[$i];
+            my $formatted_answered_questions = $questions_answered[$i] == 0 ? 0 : $questions_answered[$i];
+
+            # Calculate dots for alignment based on the lengths of file names and scores.
+            my $dots = '.' x ($target_length - length($completed_files[$i]) - length($formatted_correct_answers) - length($formatted_answered_questions));
+
+            # Print aligned student scores with reasons for attention.
+            printf("\t%s%s%d/%d (%s)\n", $completed_files[$i], $dots, $formatted_correct_answers, $formatted_answered_questions, join(", ", @reasons));
         }
     }
 }
