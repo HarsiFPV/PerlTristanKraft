@@ -1,6 +1,6 @@
 =head1 NAME
 
-ScoreExam - Evaluate student answers against a master answer key, and provide feedback and statistics
+ScoreExam - Evaluate student answers against a master answer key, and provide feedback and statistics. Answers Part 1b, part 2 and part 3
 
 =head1 VERSION
 

@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# Answers    : Part 1a of final project
+
 #Use statments to make sure proper Perl is writen and we are informed of bad uses or errors
 use strict;
 use warnings;
@@ -18,6 +20,7 @@ use v5.32;
 # Comments   : This script helps in creating multiple versions of an exam by shuffling answer choices.
 #              It generates a timestamped output file to differentiate from other versions.
 #              Please note that as <input_file> should not be in this format './file.txt' but rather in this format 'file.txt'
+
 
 # Extract the input file from command line arguments.
 my $input_file = shift @ARGV;

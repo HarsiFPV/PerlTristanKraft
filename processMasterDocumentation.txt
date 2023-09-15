@@ -1,6 +1,6 @@
 =head1 NAME
 
-processMaster - Randomize the order of answer sets for each question in an exam input file and generate a modified exam content.
+processMaster - Randomize the order of answer sets for each question in an exam input file and generate a modified exam content. Answering part 1a
 
 =head1 VERSION
 

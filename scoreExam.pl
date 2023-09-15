@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+# Answers    : Part 1b, part 2 and part 3
+
 # Enforce strict variable declaration and provide warnings for common mistakes to enhance code reliability
 use strict;
 use warnings;
