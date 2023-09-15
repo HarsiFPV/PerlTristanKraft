@@ -33,7 +33,7 @@ score_exam($sample_exam, @exam_files);
 
 ############################################
 # Usage      : normalize_text($text)
-# Purpose    : To normalize a text by removing common stopwords except 'not', and converting to lowercase
+# Purpose    : Used to normalize a text by removing common stopwords except 'not', and converting to lowercase
 # Returns    : A normalized string with stopwords removed
 # Parameters : A string to be normalized
 # Throws     : no exceptions
@@ -85,7 +85,7 @@ sub distance_calc {
 # Parameters : A master answer file and a list of student answer files
 # Throws     : Errors related to file handling
 # Comments   : A robust exam grading system that can handle textual variations
-# See Also   : normalize_text, distance_calc
+# See Also   : normalize_text, distance_calc, sum, min, max, standard_deviation
 
 sub score_exam {
 

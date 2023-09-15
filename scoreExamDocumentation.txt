@@ -1,0 +1,70 @@
+=head1 NAME
+
+ScoreExam - Evaluate student answers against a master answer key, and provide feedback and statistics
+
+=head1 VERSION
+
+This documentation refers to <Module::ScoreExam> version 0.0.1
+
+=head1 USAGE
+
+    # Using opendir within a block that checks for exceptions ensures that directory-access issues are caught early
+    opendir(DIR, $exam_dir) or die "Couldn't open directory $exam_dir: $!";
+
+    while (my $file = readdir(DIR)) {
+    # Filtering for '.txt' files, excluding hidden files (starting with a dot)
+    next unless $file =~ /\.txt$/ && $file !~ /^\./;
+
+    # Using File::Spec ensures that file paths are constructed in a cross-platform manner
+    push @exam_files, File::Spec->catfile($exam_dir, $file);
+    }
+    closedir(DIR);
+
+    # A separate function call keeps the main logic clean
+    score_exam($sample_exam, @exam_files);
+
+=head1 REQUIRED ARGUMENTS
+
+At least two arguments, the first one being the reference master exam file,
+the second one or the next ones being student exam files to grade.
+
+=head1 DESCRIPTION
+
+This module is able to provide automatic scoring of exams based on a master exam.
+It can also provide statistics about the scored exams as well as reporting unusual performances.
+
+=head1 DIAGNOSTICS
+
+Couldn't open directory : When the exam directory is not available
+Could not open : When the master exam file is not available
+Could not open : When the student exam file is not available
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+Please adjust the $sample_exam and $exam_dir variables according to your configuration
+
+=head1 DEPENDENCIES
+
+Lingua::StopWords
+Text:Levenshtein::XS
+File::Spec
+
+=head1 BUGS AND LIMITATIONS
+
+There are no known bugs in this module.
+Please report problems to Tristan Kraft (harsifpv@gmail.com)
+Patches are welcome.
+
+=head1 AUTHOR
+
+Tristan Kraft harsifpv@gmail.com
+Roberto Rodriguez pro.roberto.rodriguez10@gmail.com
+Maxime Baltzer maxime.baltzer@gmail.com
+
+=head1 LICENCE AND COPYRIGHT
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>
+his program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

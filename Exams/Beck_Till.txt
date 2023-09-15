@@ -34,7 +34,7 @@ ________________________________________________________________________________
 
     [ ] The name of the variable
     [ ] The compile-time type declarator of the variable
-    [ ] Random chance
+    [X] Random chance
     [X] Nothing: Perl variables don't have a static type
     [ ] The type of the first value placed in the variable
 

@@ -10,7 +10,7 @@ use List::Util qw(shuffle);
 use v5.32;
 
 ############################################
-# Usage      : perl script_name.pl <input_file>
+# Usage      : perl processMaster.pl <input_file>
 # Purpose    : To randomize the order of answer sets for each question in an exam input file and generate a modified exam content.
 # Returns    : A new file with randomized answer sets.
 # Parameters : The input exam file with questions and their respective answer sets.

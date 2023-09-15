@@ -1,0 +1,54 @@
+=head1 NAME
+
+processMaster - Randomize the order of answer sets for each question in an exam input file and generate a modified exam content.
+
+=head1 VERSION
+
+This documentation refers to <Module::ScoreExam> version 0.0.1
+
+=head1 USAGE
+
+perl script_name.pl <input_file>
+
+# Where <input file> is in this format 'file.txt' and not in this format './file.txt',
+# as it causes formating errors
+
+=head1 REQUIRED ARGUMENTS
+
+A single arguments is required, the name of the master file to process.
+
+=head1 DIAGNOSTICS
+
+Usage: $0 <input_file> : When no input file is given
+Could not open $input_file: $! : When the input file is unable to be opened
+Could not open $output_file: $! : When the ouput file that was generated can't be opened
+
+=head 1 CONFIGURATION AND ENVIRONMENT
+
+No need to configure anything.
+
+=head1 DEPENDENCIES
+
+List::Util
+
+=head1 BUGS AND LIMITATIONS
+
+If the user passes a file path instead of a file the program is unable to open the output file.
+EX : perl processMaster './sample_exam.txt'
+
+Please report problems to Tristan Kraft (harsifpv@gmail.com)
+Patches are welcome.
+
+=head1 AUTHOR
+
+Tristan Kraft harsifpv@gmail.com
+Roberto Rodriguez pro.roberto.rodriguez10@gmail.com
+Maxime Baltzer maxime.baltzer@gmail.com
+
+=head1 LICENCE AND COPYRIGHT
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>
+his program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
