@@ -331,6 +331,7 @@ sub score_exam {
     for my $i (0 .. $#completed_files) {
 
         # Store reasons for scores being below expectation.
+        # I decided that the provided reasons were good but I also added a warning if the score is 0/0 to manually check if the file is empty
         my @reasons;
 
         # Identifying students who scored less than half the total available points
@@ -355,7 +356,7 @@ sub score_exam {
             # Calculate dots for alignment based on the lengths of file names and scores.
             my $dots = '.' x ($target_length - length($completed_files[$i]) - length($formatted_correct_answers) - length($formatted_answered_questions));
 
-            # Print aligned student scores with reasons for attention.
+            # Print aligned student scores with reasons for attention. We are printing every reason here
             printf("\t%s%s%d/%d (%s)\n", $completed_files[$i], $dots, $formatted_correct_answers, $formatted_answered_questions, join(", ", @reasons));
         }
     }
